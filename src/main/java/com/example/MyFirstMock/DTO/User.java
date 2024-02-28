@@ -1,15 +1,17 @@
 package com.example.MyFirstMock.DTO;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
+@Getter
+//@NoArgsConstructor
 public class User {
 
+    @Setter
     private String login;
+
+    @Setter
     private String password;
     private final Date currentTime = new Date();
 
