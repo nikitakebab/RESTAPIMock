@@ -3,20 +3,12 @@ package com.example.MyFirstMock.controller;
 import com.example.MyFirstMock.DTO.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.Map;
 
 @RestController
 public class MockController {
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleException(HttpMessageNotReadableException e){
-
-//        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "There are unrecognized fields in request's body");
-        return ResponseEntity.internalServerError().build();
-
-    }
 
     @GetMapping("/user")
     ResponseEntity<?> getUser() {
@@ -24,9 +16,13 @@ public class MockController {
     }
 
     @PostMapping(value = "/user", consumes = {"application/json"})
-    ResponseEntity<?> postUser(@RequestBody User user) throws HttpMessageNotReadableException{
-        if ((user.getLogin() == null) || (user.getPassword() == null) || (user.getLogin().isBlank()) || (user.getPassword().isBlank()))
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid user's parameters");
-        else return ResponseEntity.ok(user);
+    ResponseEntity<?> postUser(@RequestBody Map<String, String> user) {
+        try {
+            if ((user.size() > 2) || (!user.containsKey("login") || (!user.containsKey("password")) || (user.containsValue(""))))
+                throw new Exception("Wrong parameters");
+            else return ResponseEntity.ok(new User(user.get("login"), user.get("password")));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }
