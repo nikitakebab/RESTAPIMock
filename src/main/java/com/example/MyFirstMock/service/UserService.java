@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class UserService {
 
-    final static String dbUrl = "jdbc:postgresql://postgres/demodb";
+    final static String dbUrl = "jdbc:postgresql://localhost:5432/demodb";
     final static String dbUser = "admin";
     final static String dbPassword = "password";
     public User getUserByLogin(String login) {
