@@ -38,14 +38,25 @@ public class UserService {
                         set.getDate("date"),
                         set.getString("email")
                 );
-                File file = new File(filename);
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-                    writer.write(user.toString());
-                    writer.newLine();
-                    writer.close();
+
+                ArrayList<String> lines = new ArrayList<>();
+                try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        lines.add(line);
+                    }
                 } catch (IOException e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                }
+                if(!lines.contains(user.toString())) {
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true));
+                        writer.write(user.toString());
+                        writer.newLine();
+                        writer.close();
+                    } catch (IOException e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                    }
                 }
                 return user;
             }
@@ -75,8 +86,6 @@ public class UserService {
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        // Read a random line from the ArrayList
         Random random = new Random();
         int randomIndex = random.nextInt(lines.size());
         return lines.get(randomIndex);
